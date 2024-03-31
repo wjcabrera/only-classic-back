@@ -37,3 +37,5 @@ lerna-debug.log*
 
 uploads/*
 node_modules
+
+.env
