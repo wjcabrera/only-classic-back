@@ -6,20 +6,40 @@ import {
     Patch,
     Param,
     ParseIntPipe,
+    Request,
+    UploadedFiles,
+    UseInterceptors,
 } from '@nestjs/common';
 import { ArticlesService } from './articles.service';
 import { CreateArticleDto } from './dto/createArticle.dto';
 import { UpdateArticleDto } from './dto/updateArticle.dto';
+import { UsersService } from 'src/users/users.service';
+import { Public } from '../common/decorators/public.decorator';
+import { AttachmentsService } from 'src/attachments/attachments.service';
+import { FilesInterceptor } from '@nestjs/platform-express';
 
 @Controller('articles')
 export class ArticlesController {
-    constructor(private readonly articlesService: ArticlesService) {}
+    constructor(
+        private readonly articlesService: ArticlesService,
+        private readonly userService: UsersService,
+        private readonly attachmentsService: AttachmentsService,
+    ) {}
 
     @Post()
-    async create(@Body() createArticleDto: CreateArticleDto) {
-        return await this.articlesService.create(createArticleDto);
+    @UseInterceptors(FilesInterceptor('files', 10))
+    async create(
+        @UploadedFiles() files: Array<Express.Multer.File>,
+        @Body() createArticleDto: CreateArticleDto,
+        @Request() req: any,
+    ) {
+        const user = await this.userService.findOne(req.user.id);
+        const article = await this.articlesService.create(createArticleDto, user);
+        await this.attachmentsService.upload(files, { article_id: article.id });
+        return article;
     }
 
+    @Public()
     @Get()
     async findAll() {
         return await this.articlesService.findAll();

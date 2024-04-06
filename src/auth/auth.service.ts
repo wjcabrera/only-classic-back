@@ -17,11 +17,14 @@ export class AuthService {
             throw new BadRequestException({ message: 'User not found' });
         }
 
-        const isPasswordValid = await bcrypt.compare(signInDto.password, user.password);
+        const isPasswordValid = await bcrypt.compare(
+            signInDto.password,
+            user.password,
+        );
         console.log(isPasswordValid, 'isPasswordValid');
         console.log(signInDto.password, 'signInDto.password');
         console.log(user.password, 'user.password');
-        if (!await bcrypt.compare(signInDto.password, user.password)) {
+        if (!(await bcrypt.compare(signInDto.password, user.password))) {
             throw new BadRequestException({ message: 'Invalid password' });
         }
         const payload = { sub: user.id, username: user.email };

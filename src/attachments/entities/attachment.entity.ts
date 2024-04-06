@@ -17,10 +17,9 @@ export class Attachment {
     @Column('varchar', { length: 50 })
     ext: string;
 
-    @ManyToOne(() => Article, (article) => article.attachments, {
-        nullable: false,
-    })
+    @ManyToOne(() => Article, (article) => article.attachments, {nullable: false,})
     @JoinColumn({ name: 'article_id', referencedColumnName: 'id' })
+    @Column('int', { nullable: false, name: 'article_id' })
     article: Article;
 
     @CreateDateColumn()

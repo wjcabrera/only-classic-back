@@ -16,9 +16,6 @@ export class Category {
     @Column('varchar', { length: 50, unique: true })
     name: string;
 
-    @Column('text')
-    description: string;
-
     @Column('boolean', { default: true })
     is_active: boolean;
 

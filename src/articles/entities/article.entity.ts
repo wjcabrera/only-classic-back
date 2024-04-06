@@ -13,7 +13,6 @@ import {
     UpdateDateColumn,
     OneToMany,
     OneToOne,
-    ManyToMany,
     ManyToOne,
     JoinColumn,
 } from 'typeorm';
@@ -59,18 +58,21 @@ export class Article {
     @UpdateDateColumn()
     updated_at: Date;
 
-    @ManyToOne(() => Category, (category) => category.articles)
+    @ManyToOne(() => Category, (category) => category.articles, { nullable: false })
     @JoinColumn({ name: 'category_id', referencedColumnName: 'id' })
+    @Column('int', { nullable: false, name: 'category_id' })
     category: Category;
+
+    @ManyToOne(() => User, (user) => user.articles, { nullable: false })
+    @JoinColumn({ name: 'user_id', referencedColumnName: 'id' })
+    @Column('int', { nullable: false, name: 'user_id' })
+    user: User;
 
     @OneToOne(() => Sale, (sale) => sale.article)
     sale: Sale[];
 
-    @ManyToMany(() => Question, (question) => question.article)
+    @OneToMany(() => Question, (question) => question.article)
     questions: Question[];
-
-    @ManyToMany(() => User, (user) => user.articles)
-    user: User[];
 
     @OneToMany(() => Attachment, (attachment) => attachment.article)
     attachments: Attachment[];

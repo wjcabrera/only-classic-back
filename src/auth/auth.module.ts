@@ -14,7 +14,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
         JwtModule.register({
             global: true,
             secret: jwtConstants.secret,
-            signOptions: { expiresIn: '60s' },
         }),
         TypeOrmModule.forFeature([User]),
     ],

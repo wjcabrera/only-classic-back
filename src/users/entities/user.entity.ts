@@ -23,7 +23,7 @@ export class User {
     @Column('varchar', { length: 50 })
     last_name: string;
 
-    @Column('boolean', { default: true })
+    @Column('boolean', { default: false })
     is_active: boolean;
 
     @Column('varchar', { unique: true, length: 50 })
@@ -53,11 +53,8 @@ export class User {
     @UpdateDateColumn()
     updated_at: Date;
 
-    @OneToMany(() => Sale, (sale) => sale.buyer)
+    @OneToMany(() => Sale, (sale) => sale.user)
     sales_bought: Sale[];
-
-    @OneToMany(() => Sale, (sale) => sale.seller)
-    sales_sold: Sale[];
 
     @ManyToMany(() => Article, (article) => article.user)
     articles: Article[];

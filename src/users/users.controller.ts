@@ -26,6 +26,11 @@ export class UsersController {
         return await this.usersService.findAll();
     }
 
+    @Get('confirm/:id')
+    async confirm(@Param('id', ParseIntPipe) id: number) {
+        return await this.usersService.confirm(id);
+    }
+
     @Get(':id')
     async findOne(@Param('id', ParseIntPipe) id: number) {
         return await this.usersService.findOne(id);

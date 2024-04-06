@@ -1,19 +1,42 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateSaleDto } from './dto/createSale.dto';
 import { UpdateSaleDto } from './dto/updateSale.dto';
+import { User } from 'src/users/entities/user.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Sale } from './entities/sale.entity';
+import { Repository } from 'typeorm';
+import { ArticlesService } from 'src/articles/articles.service';
 
 @Injectable()
 export class SalesService {
-    create(createSaleDto: CreateSaleDto) {
-        return 'This action adds a new sale';
+    constructor(
+        @InjectRepository(Sale)
+        private salesRepository: Repository<Sale>,
+        private readonly articlesService: ArticlesService,
+    ) {}
+
+    async create(createSaleDto: CreateSaleDto, user: User) {
+        const article = await this.articlesService.findOne(createSaleDto.article_id);
+        await this.articlesService.remove(createSaleDto.article_id);
+        return this.salesRepository.save({
+            ...createSaleDto,
+            buyer: user,
+            article,
+        });
     }
 
-    findAll() {
-        return `This action returns all sales`;
+    async findAll(me: User) {
+        return await this.salesRepository.createQueryBuilder('sale')
+            .where('sale.user_id = :id', { id: me.id })
+            .getMany();
     }
 
-    findOne(id: number) {
-        return `This action returns a #${id} sale`;
+    async findOne(id: number) {
+        try {
+            return await this.salesRepository.findOneByOrFail({id});
+        } catch (error) {
+            throw new BadRequestException('Sale not found');
+        }
     }
 
     update(id: number, updateSaleDto: UpdateSaleDto) {

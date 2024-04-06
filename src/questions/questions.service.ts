@@ -4,20 +4,31 @@ import { UpdateQuestionDto } from './dto/updateQuestion.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Question } from './entities/question.entity';
 import { Repository } from 'typeorm';
+import { User } from 'src/users/entities/user.entity';
+import { ArticlesService } from 'src/articles/articles.service';
 
 @Injectable()
 export class QuestionsService {
     constructor(
         @InjectRepository(Question)
         private questionsRepository: Repository<Question>,
+        private readonly articlesService: ArticlesService
     ) {}
 
-    async create(createQuestionDto: CreateQuestionDto) {
-        return await this.questionsRepository.save(createQuestionDto);
+    async create(createQuestionDto: CreateQuestionDto, user: User) {
+        const article = await this.articlesService.findOne(createQuestionDto.article_id);
+        console.log(user.id);
+        return await this.questionsRepository.save({
+            question: createQuestionDto.question,
+            user,
+            article,
+        });
     }
 
-    async findAll() {
-        return await this.questionsRepository.find();
+    async findAll(articleId: number) {
+        return await this.questionsRepository.createQueryBuilder('question')
+            .where('question.article_id = :articleId', { articleId })
+            .getMany();
     }
 
     async findOne(id: number) {
@@ -25,7 +36,9 @@ export class QuestionsService {
     }
 
     async update(id: number, updateQuestionDto: UpdateQuestionDto) {
-        return await this.questionsRepository.update(id, updateQuestionDto);
+        return await this.questionsRepository.update(id, {
+            answer: updateQuestionDto.answer,
+        });
     }
 
     async remove(id: number) {

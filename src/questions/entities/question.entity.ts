@@ -7,7 +7,8 @@ import {
     CreateDateColumn,
     UpdateDateColumn,
     OneToMany,
-    ManyToMany,
+    JoinColumn,
+    ManyToOne,
 } from 'typeorm';
 
 @Entity()
@@ -18,7 +19,7 @@ export class Question {
     @Column('text')
     question: string;
 
-    @Column('text')
+    @Column('text', { nullable: true })
     answer: string;
 
     @CreateDateColumn()
@@ -27,9 +28,13 @@ export class Question {
     @UpdateDateColumn()
     updated_at: Date;
 
-    @OneToMany(() => User, (user) => user.questions)
+    @ManyToOne(() => User, (user) => user.questions, { nullable: false })
+    @JoinColumn({ name: 'user_id', referencedColumnName: 'id' })
+    @Column('int', { nullable: false, name: 'user_id' })
     user: User;
 
-    @ManyToMany(() => Article, (article) => article.questions)
+    @ManyToOne(() => Article, (article) => article.questions, { nullable: false })
+    @JoinColumn({ name: 'article_id', referencedColumnName: 'id' })
+    @Column('int', { nullable: false, name: 'article_id' })
     article: Article;
 }

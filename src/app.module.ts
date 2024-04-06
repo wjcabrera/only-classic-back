@@ -10,6 +10,10 @@ import { QuestionsModule } from './questions/questions.module';
 import { CategoriesModule } from './categories/categories.module';
 import { AuthModule } from './auth/auth.module';
 import { AttachmentsModule } from './attachments/attachments.module';
+import { MailerModule } from '@nestjs-modules/mailer';
+import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
+import { APP_GUARD } from '@nestjs/core';
+import { AuthGuard } from './auth/auth.guard';
 
 @Module({
     imports: [
@@ -20,7 +24,7 @@ import { AttachmentsModule } from './attachments/attachments.module';
         SalesModule,
         ArticlesModule,
         TypeOrmModule.forRootAsync({
-            imports: [ConfigModule],      
+            imports: [ConfigModule],
             useFactory: (configService: ConfigService) => ({
                 type: 'postgres' as 'postgres',
                 host: configService.get<string>('DB_HOST'),
@@ -38,14 +42,35 @@ import { AttachmentsModule } from './attachments/attachments.module';
         CategoriesModule,
         AuthModule,
         AttachmentsModule,
-        // CorsModule.forRoot({
-        //     origin: 'http://localhost:3000', // Cambia esto por el dominio de tu aplicación React
-        //     methods: ['GET', 'POST', 'PUT', 'DELETE'], // Métodos HTTP permitidos
-        //     allowedHeaders: ['Content-Type', 'Authorization'], // Encabezados permitidos
-        //     credentials: true, // Habilitar credenciales CORS (si necesitas enviar cookies)
-        // }),
+        MailerModule.forRoot({
+            transport: {
+                host: process.env.EMAIL_HOST,
+                port: process.env.EMAIL_PORT,
+                secure: false,
+                auth: {
+                    user: process.env.EMAIL_USER,
+                    pass: process.env.EMAIL_PASS,
+                },
+            },
+            defaults: {
+                from: `"${process.env.EMAIL_NAME}" <${process.env.EMAIL_USER}>`,
+            },
+            template: {
+                dir: process.cwd() + '/templates',
+                adapter: new HandlebarsAdapter(),
+                options: {
+                    strict: true,
+                },
+            },
+        }),
     ],
     controllers: [AppController],
-    providers: [AppService],
+    providers: [
+        AppService,
+        {
+            provide: APP_GUARD,
+            useClass: AuthGuard,
+        },
+    ],
 })
 export class AppModule {}

@@ -6,12 +6,14 @@ import { Attachment } from './entities/attachment.entity';
 import { Repository } from 'typeorm';
 import * as fs from 'fs';
 import * as path from 'path';
+import { ArticlesService } from 'src/articles/articles.service';
 
 @Injectable()
 export class AttachmentsService {
     constructor(
         @InjectRepository(Attachment)
-        private attachmentsRepository: Repository<Attachment>,
+        private readonly attachmentsRepository: Repository<Attachment>,
+        private readonly articlesService: ArticlesService,
     ) {}
 
     async upload(
@@ -24,9 +26,13 @@ export class AttachmentsService {
             fs.mkdirSync(uploadDir, { recursive: true });
         }
 
+        const article = await this.articlesService.findOne(
+            createAttachmentDto.article_id,
+        );
+
         files.forEach(async (file) => {
             const attachment = await this.attachmentsRepository.save({
-                article_id: 1,
+                article,
                 ext: files[0].originalname.split('.').pop(),
             });
 
