@@ -12,11 +12,13 @@ export class QuestionsService {
     constructor(
         @InjectRepository(Question)
         private questionsRepository: Repository<Question>,
-        private readonly articlesService: ArticlesService
+        private readonly articlesService: ArticlesService,
     ) {}
 
     async create(createQuestionDto: CreateQuestionDto, user: User) {
-        const article = await this.articlesService.findOne(createQuestionDto.article_id);
+        const article = await this.articlesService.findOne(
+            createQuestionDto.article_id,
+        );
         console.log(user.id);
         return await this.questionsRepository.save({
             question: createQuestionDto.question,
@@ -25,9 +27,10 @@ export class QuestionsService {
         });
     }
 
-    async findAll(articleId: number) {
-        return await this.questionsRepository.createQueryBuilder('question')
-            .where('question.article_id = :articleId', { articleId })
+    async findAll(articleID: number) {
+        return await this.questionsRepository
+            .createQueryBuilder('question')
+            .where('question.article_id = :articleID', { articleID })
             .getMany();
     }
 

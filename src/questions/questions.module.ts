@@ -12,7 +12,12 @@ import { Category } from 'src/categories/entities/category.entity';
 
 @Module({
     controllers: [QuestionsController],
-    providers: [QuestionsService, UsersService, ArticlesService, CategoriesService],
+    providers: [
+        QuestionsService,
+        UsersService,
+        ArticlesService,
+        CategoriesService,
+    ],
     imports: [TypeOrmModule.forFeature([Question, User, Article, Category])],
 })
 export class QuestionsModule {}

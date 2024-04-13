@@ -1,5 +1,6 @@
 import { Attachment } from 'src/attachments/entities/attachment.entity';
 import { Category } from 'src/categories/entities/category.entity';
+import { Notification } from 'src/notifications/entities/notification.entity';
 import { Question } from 'src/questions/entities/question.entity';
 import { Sale } from 'src/sales/entities/sale.entity';
 import { CurrencyEnum } from 'src/shared/enums/currency.enum';
@@ -58,7 +59,9 @@ export class Article {
     @UpdateDateColumn()
     updated_at: Date;
 
-    @ManyToOne(() => Category, (category) => category.articles, { nullable: false })
+    @ManyToOne(() => Category, (category) => category.articles, {
+        nullable: false,
+    })
     @JoinColumn({ name: 'category_id', referencedColumnName: 'id' })
     @Column('int', { nullable: false, name: 'category_id' })
     category: Category;
@@ -76,4 +79,7 @@ export class Article {
 
     @OneToMany(() => Attachment, (attachment) => attachment.article)
     attachments: Attachment[];
+
+    @OneToMany(() => Notification, (notification) => notification.article)
+    notifications: Notification[];
 }

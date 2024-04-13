@@ -17,19 +17,18 @@ import { UsersService } from 'src/users/users.service';
 export class SalesController {
     constructor(
         private readonly salesService: SalesService,
-        private readonly userService: UsersService,
+        private readonly usersService: UsersService,
     ) {}
 
     @Post()
     async create(@Body() createSaleDto: CreateSaleDto, @Request() req: any) {
-        const user = await this.userService.findOne(req.user.id);
+        const user = await this.usersService.findOne(req.user.id);
         return this.salesService.create(createSaleDto, user);
     }
 
     @Get()
     async findAll(@Request() req: any) {
-        const user = await this.userService.findOne(req.user.id);
-        return this.salesService.findAll(user);
+        return await this.salesService.findAll(req.user.sub);
     }
 
     @Get(':id')

@@ -1,4 +1,5 @@
 import { Article } from 'src/articles/entities/article.entity';
+import { Notification } from 'src/notifications/entities/notification.entity';
 import { Question } from 'src/questions/entities/question.entity';
 import { Sale } from 'src/sales/entities/sale.entity';
 import { RoleEnum } from 'src/shared/enums/role.enum';
@@ -61,4 +62,7 @@ export class User {
 
     @OneToMany(() => Question, (question) => question.user)
     questions: Question[];
+
+    @OneToMany(() => Notification, (notification) => notification.user)
+    notifications: Notification[];
 }

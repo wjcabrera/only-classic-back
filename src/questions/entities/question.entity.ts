@@ -1,4 +1,5 @@
 import { Article } from 'src/articles/entities/article.entity';
+import { Notification } from 'src/notifications/entities/notification.entity';
 import { User } from 'src/users/entities/user.entity';
 import {
     Entity,
@@ -33,8 +34,13 @@ export class Question {
     @Column('int', { nullable: false, name: 'user_id' })
     user: User;
 
-    @ManyToOne(() => Article, (article) => article.questions, { nullable: false })
+    @ManyToOne(() => Article, (article) => article.questions, {
+        nullable: false,
+    })
     @JoinColumn({ name: 'article_id', referencedColumnName: 'id' })
     @Column('int', { nullable: false, name: 'article_id' })
     article: Article;
+
+    @OneToMany(() => Notification, (notification) => notification.question)
+    notifications: Notification[];
 }

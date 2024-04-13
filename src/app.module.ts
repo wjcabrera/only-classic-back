@@ -14,6 +14,8 @@ import { MailerModule } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { APP_GUARD } from '@nestjs/core';
 import { AuthGuard } from './auth/auth.guard';
+import { NotificationsModule } from './notifications/notifications.module';
+import { EventGateway } from './event/event.gateway';
 
 @Module({
     imports: [
@@ -63,6 +65,7 @@ import { AuthGuard } from './auth/auth.guard';
                 },
             },
         }),
+        NotificationsModule,
     ],
     controllers: [AppController],
     providers: [
@@ -71,6 +74,7 @@ import { AuthGuard } from './auth/auth.guard';
             provide: APP_GUARD,
             useClass: AuthGuard,
         },
+        EventGateway,
     ],
 })
 export class AppModule {}

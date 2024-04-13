@@ -16,7 +16,9 @@ export class SalesService {
     ) {}
 
     async create(createSaleDto: CreateSaleDto, user: User) {
-        const article = await this.articlesService.findOne(createSaleDto.article_id);
+        const article = await this.articlesService.findOne(
+            createSaleDto.article_id,
+        );
         await this.articlesService.remove(createSaleDto.article_id);
         return this.salesRepository.save({
             ...createSaleDto,
@@ -25,15 +27,17 @@ export class SalesService {
         });
     }
 
-    async findAll(me: User) {
-        return await this.salesRepository.createQueryBuilder('sale')
-            .where('sale.user_id = :id', { id: me.id })
+    async findAll(userID: number) {
+        console.log(userID);
+        return await this.salesRepository
+            .createQueryBuilder('sale')
+            .where('sale.user_id = :userID', { userID })
             .getMany();
     }
 
     async findOne(id: number) {
         try {
-            return await this.salesRepository.findOneByOrFail({id});
+            return await this.salesRepository.findOneByOrFail({ id });
         } catch (error) {
             throw new BadRequestException('Sale not found');
         }

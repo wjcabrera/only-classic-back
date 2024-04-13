@@ -22,7 +22,7 @@ import { FilesInterceptor } from '@nestjs/platform-express';
 export class ArticlesController {
     constructor(
         private readonly articlesService: ArticlesService,
-        private readonly userService: UsersService,
+        private readonly usersService: UsersService,
         private readonly attachmentsService: AttachmentsService,
     ) {}
 
@@ -33,8 +33,11 @@ export class ArticlesController {
         @Body() createArticleDto: CreateArticleDto,
         @Request() req: any,
     ) {
-        const user = await this.userService.findOne(req.user.id);
-        const article = await this.articlesService.create(createArticleDto, user);
+        const user = await this.usersService.findOne(req.user.id);
+        const article = await this.articlesService.create(
+            createArticleDto,
+            user,
+        );
         await this.attachmentsService.upload(files, { article_id: article.id });
         return article;
     }

@@ -12,7 +12,12 @@ import { Attachment } from 'src/attachments/entities/attachment.entity';
 
 @Module({
     controllers: [ArticlesController],
-    providers: [ArticlesService, CategoriesService, UsersService, AttachmentsService],
+    providers: [
+        ArticlesService,
+        CategoriesService,
+        UsersService,
+        AttachmentsService,
+    ],
     imports: [TypeOrmModule.forFeature([Article, Category, User, Attachment])],
 })
 export class ArticlesModule {}

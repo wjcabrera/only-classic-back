@@ -16,8 +16,9 @@ import { UsersService } from 'src/users/users.service';
 
 @Controller('questions')
 export class QuestionsController {
-    constructor(private readonly questionsService: QuestionsService,
-        private readonly userService: UsersService,
+    constructor(
+        private readonly questionsService: QuestionsService,
+        private readonly usersService: UsersService,
     ) {}
 
     @Post()
@@ -25,7 +26,7 @@ export class QuestionsController {
         @Body() createQuestionDto: CreateQuestionDto,
         @Request() req: any,
     ) {
-        const user = await this.userService.findOne(req.user.id);
+        const user = await this.usersService.findOne(req.user.id);
         return await this.questionsService.create(createQuestionDto, user);
     }
 
