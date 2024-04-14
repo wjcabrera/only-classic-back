@@ -9,6 +9,8 @@ import {
     Request,
     UploadedFiles,
     UseInterceptors,
+    StreamableFile,
+    Res,
 } from '@nestjs/common';
 import { ArticlesService } from './articles.service';
 import { CreateArticleDto } from './dto/createArticle.dto';
@@ -17,6 +19,9 @@ import { UsersService } from 'src/users/users.service';
 import { Public } from '../common/decorators/public.decorator';
 import { AttachmentsService } from 'src/attachments/attachments.service';
 import { FilesInterceptor } from '@nestjs/platform-express';
+import { createReadStream } from 'fs';
+import { join } from 'path';
+import type { Response } from 'express';
 
 @Controller('articles')
 export class ArticlesController {
@@ -40,6 +45,17 @@ export class ArticlesController {
         );
         await this.attachmentsService.upload(files, { article_id: article.id });
         return article;
+    }
+
+    @Public()
+    @Get('file')
+    getFile(@Res({ passthrough: true }) res: Response): StreamableFile {
+        const file = createReadStream(join(process.cwd(), 'uploads/14/4.jpg'));
+        res.set({
+            'Content-Type': 'image/jpeg',
+            'Content-Disposition': 'attachment; filename="4.jpg"',
+        });
+        return new StreamableFile(file);
     }
 
     @Public()
