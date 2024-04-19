@@ -59,6 +59,12 @@ export class ArticlesController {
     }
 
     @Public()
+    @Get(':search')
+    async findBySearch(@Param('search') search: string) {
+        return await this.articlesService.findAllBySearch(search);
+    }
+
+    @Public()
     @Get()
     async findAll() {
         return await this.articlesService.findAll();

@@ -3,7 +3,7 @@ import { CreateArticleDto } from './dto/createArticle.dto';
 import { UpdateArticleDto } from './dto/updateArticle.dto';
 import { Article } from './entities/article.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 import { StateArticleEnum } from 'src/shared/enums/stateArticle.enum';
 import { CategoriesService } from 'src/categories/categories.service';
 import { User } from 'src/users/entities/user.entity';
@@ -32,6 +32,13 @@ export class ArticlesService {
     async findAll() {
         return await this.articlesRepository.findBy({
             state: StateArticleEnum.ENABLED,
+        });
+    }
+
+    async findAllBySearch(search: string) {
+        return await this.articlesRepository.findBy({
+            state: StateArticleEnum.ENABLED,
+            title: Like(`%${search}%`),
         });
     }
 
