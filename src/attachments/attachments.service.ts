@@ -30,6 +30,8 @@ export class AttachmentsService {
             createAttachmentDto.article_id,
         );
 
+        console.log(files);
+
         files.forEach(async (file) => {
             const attachment = await this.attachmentsRepository.save({
                 article,

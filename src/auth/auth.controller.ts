@@ -12,10 +12,14 @@ import { AuthService } from './auth.service';
 import { SignInDto } from './dto/singIn.dto';
 import { AuthGuard } from './auth.guard';
 import { Public } from 'src/common/decorators/public.decorator';
+import { UsersService } from 'src/users/users.service';
 
 @Controller('auth')
 export class AuthController {
-    constructor(private authService: AuthService) {}
+    constructor(
+        private authService: AuthService,
+        protected readonly usersService: UsersService,
+    ) {}
 
     @Public()
     @HttpCode(HttpStatus.OK)
@@ -24,9 +28,8 @@ export class AuthController {
         return this.authService.signIn(signInDto);
     }
 
-    @UseGuards(AuthGuard)
     @Get('profile')
     getProfile(@Request() req: any) {
-        return req.user;
+        return this.usersService.findOne(req.user.sub);
     }
 }

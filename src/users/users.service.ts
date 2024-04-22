@@ -8,6 +8,7 @@ import { saltOrRounds } from '../shared/constants/saltOrRounds.constants';
 import * as bcrypt from 'bcrypt';
 import { MailerService } from '@nestjs-modules/mailer';
 import { Request } from 'express';
+import { ChangePasswordDto } from './dto/changePassword.dto';
 
 @Injectable()
 export class UsersService {
@@ -53,7 +54,20 @@ export class UsersService {
     }
 
     async findOne(id: number) {
-        return await this.usersRepository.findOneByOrFail({ id });
+        return await this.usersRepository.createQueryBuilder('user')
+            .select([
+                'user.id',
+                'user.first_name',
+                'user.last_name',
+                'user.email',
+                'user.is_active',
+                'user.country',
+                'user.address',
+                'user.phone',
+            ])
+            .where('user.id = :id', { id })
+            .andWhere('user.is_active = :isActive', { isActive: true })
+            .getOneOrFail();
     }
 
     async findOneBy(email: string) {
@@ -72,7 +86,50 @@ export class UsersService {
         return await this.usersRepository.update(id, { is_active: true });
     }
 
+    async confirmPassword(id: number, hash: string) {
+        return await this.usersRepository.update(id, { password: hash });
+    }
+
     async getCurrentUser(request: Request) {
         return request.user;
+    }
+
+    async changePassword(changePasswordDto: ChangePasswordDto, id : number) {
+        const user = await this.usersRepository.findOneOrFail({ where: { id } });
+
+        const isMatch = await bcrypt.compare(
+            changePasswordDto.password,
+            user.password,
+        );
+
+        if (!isMatch) {
+            throw new Error('Password does not match');
+        }
+
+        if (changePasswordDto.newPassword !== changePasswordDto.confirmPassword) {
+            throw new Error('Passwords do not match');
+        }
+
+        const hash = await bcrypt.hash(
+            changePasswordDto.newPassword,
+            saltOrRounds.salt,
+        );
+
+        await this.mailerService
+        .sendMail({
+            to: user.email,
+            subject: 'Confirmación de cambio de contraseña',
+            template: './confirmationChangePassword',
+            context: {
+                name: user.first_name,
+                url: `http://localhost:3000/users/confirm-password?id=${user.id}&hash=${hash}`
+            },
+        })
+        .then(() => {
+            console.log('Email sent');
+        })
+        .catch((error) => {
+            console.error(error);
+        });
     }
 }

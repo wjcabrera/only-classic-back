@@ -11,6 +11,7 @@ import {
     UseInterceptors,
     StreamableFile,
     Res,
+    Query,
 } from '@nestjs/common';
 import { ArticlesService } from './articles.service';
 import { CreateArticleDto } from './dto/createArticle.dto';
@@ -38,7 +39,7 @@ export class ArticlesController {
         @Body() createArticleDto: CreateArticleDto,
         @Request() req: any,
     ) {
-        const user = await this.usersService.findOne(req.user.id);
+        const user = await this.usersService.findOne(req.user.sub);
         const article = await this.articlesService.create(
             createArticleDto,
             user,
@@ -49,25 +50,19 @@ export class ArticlesController {
 
     @Public()
     @Get('file')
-    getFile(@Res({ passthrough: true }) res: Response): StreamableFile {
-        const file = createReadStream(join(process.cwd(), 'uploads/14/4.jpg'));
+    getFile(@Res({ passthrough: true }) res: Response, @Query('path') path: string) {
+        const file = createReadStream(join(process.cwd(), 'uploads/', path));
         res.set({
             'Content-Type': 'image/jpeg',
-            'Content-Disposition': 'attachment; filename="4.jpg"',
+            'Content-Disposition': 'attachment; filename="image.jpg"',
         });
         return new StreamableFile(file);
     }
 
     @Public()
-    @Get(':search')
-    async findBySearch(@Param('search') search: string) {
-        return await this.articlesService.findAllBySearch(search);
-    }
-
-    @Public()
     @Get()
-    async findAll() {
-        return await this.articlesService.findAll();
+    async findBySearch(@Query('search') search: string, @Query('category') category: number, @Query('location') location: string) {
+        return await this.articlesService.findAllBySearch(search, category, location);
     }
 
     @Get(':id')

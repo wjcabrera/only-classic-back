@@ -3,7 +3,7 @@ import { CreateArticleDto } from './dto/createArticle.dto';
 import { UpdateArticleDto } from './dto/updateArticle.dto';
 import { Article } from './entities/article.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Like, Repository } from 'typeorm';
+import { Brackets, Like, Repository } from 'typeorm';
 import { StateArticleEnum } from 'src/shared/enums/stateArticle.enum';
 import { CategoriesService } from 'src/categories/categories.service';
 import { User } from 'src/users/entities/user.entity';
@@ -35,19 +35,46 @@ export class ArticlesService {
         });
     }
 
-    async findAllBySearch(search: string) {
-        return await this.articlesRepository.findBy({
-            state: StateArticleEnum.ENABLED,
-            title: Like(`%${search}%`),
-        });
+    async findAllBySearch(search: string, category: number, location: string) {
+        return await this.articlesRepository.createQueryBuilder('article')
+            .innerJoinAndSelect('article.attachments', 'attachments')
+            .where('article.state = :state', { state: StateArticleEnum.ENABLED })
+            .andWhere(
+                new Brackets((qb) => {
+                    if (search) {
+                        qb.where('(article.title LIKE :search OR article.description LIKE :search)', { search: `%${search}%` });
+                    }
+                    if (category) {
+                        qb.andWhere('article.category_id = :category', { category });
+                    }
+                    if (location) {
+                        qb.andWhere('article.location LIKE :location', { location: `%${location}%` });
+                    }
+                }
+            )).getMany().then((articles) => {
+                return articles.map((article) => {
+                    return {
+                        ...article,
+                        image: `${article.id}/${article.attachments[0].id}.${article.attachments[0].ext}`,
+                    }
+                });
+            });
     }
 
     async findOne(id: number) {
         try {
-            return await this.articlesRepository.findOneByOrFail({
-                id,
-                state: StateArticleEnum.ENABLED,
-            });
+            return await this.articlesRepository.createQueryBuilder('article')
+                .innerJoinAndSelect('article.attachments', 'attachments')
+                .where('article.state = :state', { state: StateArticleEnum.ENABLED })
+                .andWhere('article.id = :id', { id })
+                .getOneOrFail().then((article) => {
+                    return {
+                        ...article,
+                        images: article.attachments.map((attachment) => {
+                            return `${article.id}/${attachment.id}.${attachment.ext}`;
+                        }),
+                    }
+                });
         } catch (error) {
             throw new BadRequestException('Article not found');
         }
