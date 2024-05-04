@@ -55,7 +55,10 @@ export class UsersController {
         @Body() changePasswordDto: ChangePasswordDto,
         @Request() req: any,
     ) {
-        return await this.usersService.changePassword(changePasswordDto, req.user.id);
+        return await this.usersService.changePassword(
+            changePasswordDto,
+            req.user.id,
+        );
     }
 
     @Patch(':id')

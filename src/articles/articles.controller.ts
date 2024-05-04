@@ -50,7 +50,10 @@ export class ArticlesController {
 
     @Public()
     @Get('file')
-    getFile(@Res({ passthrough: true }) res: Response, @Query('path') path: string) {
+    getFile(
+        @Res({ passthrough: true }) res: Response,
+        @Query('path') path: string,
+    ) {
         const file = createReadStream(join(process.cwd(), 'uploads/', path));
         res.set({
             'Content-Type': 'image/jpeg',
@@ -61,8 +64,16 @@ export class ArticlesController {
 
     @Public()
     @Get()
-    async findBySearch(@Query('search') search: string, @Query('category') category: number, @Query('location') location: string) {
-        return await this.articlesService.findAllBySearch(search, category, location);
+    async findBySearch(
+        @Query('search') search: string,
+        @Query('category') category: number,
+        @Query('location') location: string,
+    ) {
+        return await this.articlesService.findAllBySearch(
+            search,
+            category,
+            location,
+        );
     }
 
     @Get(':id')

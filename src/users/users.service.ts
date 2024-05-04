@@ -54,7 +54,8 @@ export class UsersService {
     }
 
     async findOne(id: number) {
-        return await this.usersRepository.createQueryBuilder('user')
+        return await this.usersRepository
+            .createQueryBuilder('user')
             .select([
                 'user.id',
                 'user.first_name',
@@ -94,8 +95,10 @@ export class UsersService {
         return request.user;
     }
 
-    async changePassword(changePasswordDto: ChangePasswordDto, id : number) {
-        const user = await this.usersRepository.findOneOrFail({ where: { id } });
+    async changePassword(changePasswordDto: ChangePasswordDto, id: number) {
+        const user = await this.usersRepository.findOneOrFail({
+            where: { id },
+        });
 
         const isMatch = await bcrypt.compare(
             changePasswordDto.password,
@@ -106,7 +109,9 @@ export class UsersService {
             throw new Error('Password does not match');
         }
 
-        if (changePasswordDto.newPassword !== changePasswordDto.confirmPassword) {
+        if (
+            changePasswordDto.newPassword !== changePasswordDto.confirmPassword
+        ) {
             throw new Error('Passwords do not match');
         }
 
@@ -116,20 +121,20 @@ export class UsersService {
         );
 
         await this.mailerService
-        .sendMail({
-            to: user.email,
-            subject: 'Confirmación de cambio de contraseña',
-            template: './confirmationChangePassword',
-            context: {
-                name: user.first_name,
-                url: `http://localhost:3000/users/confirm-password?id=${user.id}&hash=${hash}`
-            },
-        })
-        .then(() => {
-            console.log('Email sent');
-        })
-        .catch((error) => {
-            console.error(error);
-        });
+            .sendMail({
+                to: user.email,
+                subject: 'Confirmación de cambio de contraseña',
+                template: './confirmationChangePassword',
+                context: {
+                    name: user.first_name,
+                    url: `http://localhost:3000/users/confirm-password?id=${user.id}&hash=${hash}`,
+                },
+            })
+            .then(() => {
+                console.log('Email sent');
+            })
+            .catch((error) => {
+                console.error(error);
+            });
     }
 }
