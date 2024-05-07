@@ -137,4 +137,8 @@ export class UsersService {
                 console.error(error);
             });
     }
+
+    async clear() {
+        return await this.usersRepository.delete({});
+    }
 }

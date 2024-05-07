@@ -43,22 +43,4 @@ export class AttachmentsController {
         });
         return new StreamableFile(file);
     }
-
-    @Get(':id')
-    findOne(@Param('id') id: string) {
-        return this.attachmentsService.findOne(+id);
-    }
-
-    @Patch(':id')
-    update(
-        @Param('id') id: string,
-        @Body() updateAttachmentDto: UpdateAttachmentDto,
-    ) {
-        return this.attachmentsService.update(+id, updateAttachmentDto);
-    }
-
-    @Delete(':id')
-    remove(@Param('id') id: string) {
-        return this.attachmentsService.remove(+id);
-    }
 }

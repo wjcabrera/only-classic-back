@@ -34,4 +34,8 @@ export class CategoriesService {
     async remove(id: number) {
         return await this.categoryRepository.update(id, { is_active: false });
     }
+
+    async clear() {
+        return await this.categoryRepository.delete({});
+    }
 }

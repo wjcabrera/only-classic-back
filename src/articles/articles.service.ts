@@ -77,7 +77,7 @@ export class ArticlesService {
         try {
             return await this.articlesRepository
                 .createQueryBuilder('article')
-                .innerJoinAndSelect('article.attachments', 'attachments')
+                .leftJoinAndSelect('article.attachments', 'attachments')
                 .where('article.state = :state', {
                     state: StateArticleEnum.ENABLED,
                 })
@@ -104,5 +104,9 @@ export class ArticlesService {
         return await this.articlesRepository.update(id, {
             state: StateArticleEnum.SLOW,
         });
+    }
+
+    async clear() {
+        return await this.articlesRepository.delete({});
     }
 }

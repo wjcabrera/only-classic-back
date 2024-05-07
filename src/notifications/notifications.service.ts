@@ -67,4 +67,8 @@ export class NotificationsService {
     async emit(data: Notification) {
         this.emitter.emit('notification', { data });
     }
+
+    async clear() {
+        return await this.notificationRepository.delete({});
+    }
 }

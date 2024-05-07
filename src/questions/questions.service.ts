@@ -47,4 +47,8 @@ export class QuestionsService {
     async remove(id: number) {
         return await this.questionsRepository.delete(id);
     }
+
+    async clear() {
+        return await this.questionsRepository.delete({});
+    }
 }
