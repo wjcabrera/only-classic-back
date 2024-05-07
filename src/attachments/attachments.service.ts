@@ -33,7 +33,7 @@ export class AttachmentsService {
         files.forEach(async (file) => {
             const attachment = await this.attachmentsRepository.save({
                 article,
-                ext: files[0].originalname.split('.').pop(),
+                ext: file.originalname.split('.').pop(),
             });
 
             const filePath = path.join(
@@ -46,17 +46,37 @@ export class AttachmentsService {
         return 'File uploaded successfully';
     }
 
-    findAll(createAttachmentDto: CreateAttachmentDto) {}
+    async uploadSeeder(
+        files: Array<string>,
+        createAttachmentDto: CreateAttachmentDto,
+    ) {
+        const uploadDir = `./uploads/${createAttachmentDto.article_id}`;
 
-    findOne(id: number) {
-        return `This action returns a #${id} attachment`;
+        if (!fs.existsSync(uploadDir)) {
+            fs.mkdirSync(uploadDir, { recursive: true });
+        }
+
+        const article = await this.articlesService.findOne(
+            createAttachmentDto.article_id,
+        );
+
+        files.forEach(async (file) => {
+            const attachment = await this.attachmentsRepository.save({
+                article,
+                ext: file.split('/').pop()?.split('.').pop(),
+            });
+
+            const filePath = path.join(
+                uploadDir,
+                `${attachment.id}.${attachment.ext}`,
+            );
+            fs.copyFileSync(file, filePath);
+        });
+
+        return 'File uploaded successfully';
     }
 
-    update(id: number, updateAttachmentDto: UpdateAttachmentDto) {
-        return `This action updates a #${id} attachment`;
-    }
-
-    remove(id: number) {
-        return `This action removes a #${id} attachment`;
+    async clear() {
+        return await this.attachmentsRepository.delete({});
     }
 }

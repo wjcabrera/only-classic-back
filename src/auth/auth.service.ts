@@ -17,6 +17,8 @@ export class AuthService {
             throw new BadRequestException({ message: 'User not found' });
         }
 
+        console.log(user, 'user');
+
         const isPasswordValid = await bcrypt.compare(
             signInDto.password,
             user.password,

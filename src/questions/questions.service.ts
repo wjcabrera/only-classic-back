@@ -19,7 +19,7 @@ export class QuestionsService {
         const article = await this.articlesService.findOne(
             createQuestionDto.article_id,
         );
-        console.log(user.id);
+
         return await this.questionsRepository.save({
             question: createQuestionDto.question,
             user,
@@ -46,5 +46,9 @@ export class QuestionsService {
 
     async remove(id: number) {
         return await this.questionsRepository.delete(id);
+    }
+
+    async clear() {
+        return await this.questionsRepository.delete({});
     }
 }

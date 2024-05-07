@@ -50,4 +50,8 @@ export class SalesService {
     remove(id: number) {
         return `This action removes a #${id} sale`;
     }
+
+    async clear() {
+        return await this.salesRepository.delete({});
+    }
 }

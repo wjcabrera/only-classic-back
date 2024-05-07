@@ -6,12 +6,11 @@ import { Repository } from 'typeorm';
 import { Notification } from './entities/notification.entity';
 import { User } from 'src/users/entities/user.entity';
 import { EventGateway } from 'src/event/event.gateway';
-import { EventEmitter } from "events";
-import {fromEvent} from "rxjs";
+import { EventEmitter } from 'events';
+import { fromEvent } from 'rxjs';
 
 @Injectable()
 export class NotificationsService {
-
     private readonly emitter: EventEmitter;
 
     constructor(
@@ -65,7 +64,11 @@ export class NotificationsService {
         return fromEvent(this.emitter, 'notification');
     }
 
-    async emit(data : Notification) {
-        this.emitter.emit('notification', {data});
+    async emit(data: Notification) {
+        this.emitter.emit('notification', { data });
+    }
+
+    async clear() {
+        return await this.notificationRepository.delete({});
     }
 }

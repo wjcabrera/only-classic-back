@@ -16,6 +16,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { AuthGuard } from './auth/auth.guard';
 import { NotificationsModule } from './notifications/notifications.module';
 import { EventGateway } from './event/event.gateway';
+import { SeedersModule } from './seeders/seeders.module';
 
 @Module({
     imports: [
@@ -66,6 +67,7 @@ import { EventGateway } from './event/event.gateway';
             },
         }),
         NotificationsModule,
+        SeedersModule,
     ],
     controllers: [AppController],
     providers: [
