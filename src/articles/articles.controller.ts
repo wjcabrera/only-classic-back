@@ -63,6 +63,12 @@ export class ArticlesController {
     }
 
     @Public()
+    @Get(':id')
+    async findOne(@Param('id', ParseIntPipe) id: number) {
+        return await this.articlesService.findOne(id);
+    }
+
+    @Public()
     @Get()
     async findBySearch(
         @Query('search') search: string,
@@ -74,11 +80,6 @@ export class ArticlesController {
             category,
             location,
         );
-    }
-
-    @Get(':id')
-    async findOne(@Param('id', ParseIntPipe) id: number) {
-        return await this.articlesService.findOne(id);
     }
 
     @Patch(':id')

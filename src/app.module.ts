@@ -17,6 +17,7 @@ import { AuthGuard } from './auth/auth.guard';
 import { NotificationsModule } from './notifications/notifications.module';
 import { EventGateway } from './event/event.gateway';
 import { SeedersModule } from './seeders/seeders.module';
+import { PaymentsModule } from './payments/payments.module';
 
 @Module({
     imports: [
@@ -68,6 +69,7 @@ import { SeedersModule } from './seeders/seeders.module';
         }),
         NotificationsModule,
         SeedersModule,
+        PaymentsModule,
     ],
     controllers: [AppController],
     providers: [

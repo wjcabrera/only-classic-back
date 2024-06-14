@@ -26,7 +26,7 @@ export class QuestionsController {
         @Body() createQuestionDto: CreateQuestionDto,
         @Request() req: any,
     ) {
-        const user = await this.usersService.findOne(req.user.id);
+        const user = await this.usersService.findOne(req.user.sub);
         return await this.questionsService.create(createQuestionDto, user);
     }
 
@@ -35,11 +35,6 @@ export class QuestionsController {
         return await this.questionsService.findAll(articleId);
     }
 
-    // @Get(':id')
-    // async findOne(@Param('id', ParseIntPipe) id: number) {
-    //     return await this.questionsService.findOne(id);
-    // }
-
     @Patch(':id')
     async update(
         @Param('id', ParseIntPipe) id: number,
@@ -47,9 +42,4 @@ export class QuestionsController {
     ) {
         return await this.questionsService.update(id, updateQuestionDto);
     }
-
-    // @Delete(':id')
-    // async remove(@Param('id', ParseIntPipe) id: number) {
-    //     return await this.questionsService.remove(id);
-    // }
 }
